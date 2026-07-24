@@ -366,12 +366,14 @@
         </section>
 
         <!-- FORMULARZ ZAKUPOWY -->
+       <!-- FORMULARZ ZAKUPOWY -->
         <section class="form-section" id="formularz">
             <div class="form-container">
                 <h2 style="font-size: 2.2rem; text-align: center; margin-bottom: 12px;">Znajdź swoją idealną nieruchomość</h2>
                 <p style="text-align: center; color: #666; margin-bottom: 32px;">Wypełnienie zajmuje około 2 minuty. Na podstawie odpowiedzi przygotuję indywidualnie dopasowane propozycje.</p>
                 
-                <form action="https://formspree.io/f/xpqvyngn" method="POST">
+                <!-- TUTAJ WKLEJ SWÓJ LINK FORMSPREE W action="" -->
+                <form id="property-form" action="https://formspree.io/f/xpqvyngn" method="POST">
                     <div class="form-group">
                         <label for="name">Imię i Nazwisko</label>
                         <input type="text" id="name" name="name" placeholder="np. Anna Kowalska" required>
@@ -401,12 +403,22 @@
                         <textarea id="message" name="message" rows="3" placeholder="np. Widok na morze, bliskość plaży, 2 sypialnie..."></textarea>
                     </div>
 
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">🟢 Wyślij formularz</button>
+                    <button type="submit" id="form-submit-btn" class="btn btn-primary" style="width: 100%;">🟢 Wyślij formularz</button>
                     
                     <p style="font-size: 0.8rem; color: #888; margin-top: 16px; text-align: center;">
                         Wysyłając formularz, zgadzasz się na kontakt w celu przedstawienia ofert. Twoje dane są w pełni bezpieczne.
                     </p>
                 </form>
+
+                <!-- ELEGANCKI KOMUNIKAT PO WYSŁANIU (DOMYŚLNIE UKRYTY) -->
+                <div id="form-success-message" style="display: none; text-align: center; padding: 40px 20px; background-color: #F5F2EB; border-radius: 20px;">
+                    <div style="font-size: 3rem; margin-bottom: 16px;">✨</div>
+                    <h3 style="font-size: 1.8rem; color: #24463D; margin-bottom: 12px;">Dziękuję za wiadomość!</h3>
+                    <p style="color: #444; font-size: 1.05rem; line-height: 1.6;">
+                        Formularz został pomyślnie przesłany. Przeanalizuję Twoje odpowiedzi i skontaktuję się z Tobą jak najszybciej z dedykowanymi propozycjami.
+                    </p>
+                </div>
+
             </div>
         </section>
 
@@ -425,5 +437,45 @@
         </div>
     </footer>
 
+    <!-- SKRYPT DLA WYSYŁKI FORMSPREE BEZ PRZEŁADOWANIA STRONY -->
+    <script>
+        const form = document.getElementById('property-form');
+        const successMessage = document.getElementById('form-success-message');
+        const submitBtn = document.getElementById('form-submit-btn');
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault(); // Powstrzymuje przeładowanie strony
+
+            submitBtn.textContent = 'Wysyłanie...';
+            submitBtn.disabled = true;
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    form.style.display = 'none'; // Ukrywamy formularz
+                    successMessage.style.display = 'block'; // Pokazujemy podziękowanie
+                } else {
+                    alert('Wystąpił błąd podczas wysyłania. Spróbuj ponowanie lub skontaktuj się przez WhatsApp.');
+                    submitBtn.textContent = '🟢 Wyślij formularz';
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                alert('Wystąpił problem z połączeniem. Spróbuj ponownie za chwilę.');
+                submitBtn.textContent = '🟢 Wyślij formularz';
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
 </body>
 </html>
+
+
